@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
-import BaseLayout from "../components/layout/BaseLayout";
-import { NftList } from "../components";
+import BaseLayout from "../components/ui/layout/BaseLayout";
+import { NftList } from "../components/ui";
 import nfts from "../content/meta.json";
 
 const Home: NextPage = () => {

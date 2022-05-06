@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { BaseLayout } from "../components";
+import { BaseLayout } from "../components/ui";
 
 import nfts from "../content/meta.json";
 import { NftMeta } from "../types/nft";
