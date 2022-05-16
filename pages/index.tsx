@@ -2,7 +2,6 @@ import type { NextPage } from "next";
 import { BaseLayout, NftList } from "@ui";
 import nfts from "../content/meta.json";
 import { NftMeta } from "@_types/nft";
-import { useWeb3 } from "@providers/web3";
 
 const Home: NextPage = () => {
   return (

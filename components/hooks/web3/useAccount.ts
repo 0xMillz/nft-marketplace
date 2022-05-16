@@ -1,6 +1,7 @@
 import useSWR from "swr";
 import { CryptoHookFactory } from "@_types/hooks";
 import { useEffect } from "react";
+import { EthereumEvent } from "@_types/ethereum";
 
 type UseAccountResponse = {
   connect: () => void;
@@ -21,8 +22,10 @@ export const hookFactory: AccountHookFactory =
       },
       {
         revalidateOnFocus: false,
+        shouldRetryOnError: false,
       }
     );
+
     const handleAccountsChanged = (...args: unknown[]) => {
       const accounts = args[0] as string[];
       if (accounts.length === 0) {
@@ -32,12 +35,13 @@ export const hookFactory: AccountHookFactory =
       }
     };
 
-    const accountsChanged = "accountsChanged";
-
     useEffect(() => {
-      ethereum?.on(accountsChanged, handleAccountsChanged);
+      ethereum?.on(EthereumEvent.ACCOUNTS_CHANGED, handleAccountsChanged);
       return () => {
-        ethereum?.removeListener(accountsChanged, handleAccountsChanged);
+        ethereum?.removeListener(
+          EthereumEvent.ACCOUNTS_CHANGED,
+          handleAccountsChanged
+        );
       };
     });
 
@@ -54,7 +58,7 @@ export const hookFactory: AccountHookFactory =
       connect,
       mutate,
       data,
-      isLoading: isLoading || isValidating,
+      isLoading: isLoading as boolean,
       isInstalled: ethereum?.isMetaMask || false,
     };
   };

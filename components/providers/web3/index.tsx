@@ -10,8 +10,34 @@ import {
   createWeb3State,
   loadContract,
   Web3State,
-} from "@providers/web3/utils";
+} from "./utils";
 import { ethers } from "ethers";
+import { MetaMaskInpageProvider } from "@metamask/providers";
+import { EthereumEvent } from "@_types/ethereum";
+
+const pageReload = () => {
+  window.location.reload();
+};
+
+const handleAccount = (ethereum: MetaMaskInpageProvider) => async () => {
+  const isLocked = !(await ethereum._metamask.isUnlocked());
+  if (isLocked) {
+    pageReload();
+  }
+};
+
+const setGlobalListeners = (ethereum: MetaMaskInpageProvider) => {
+  ethereum.on(EthereumEvent.CHAIN_CHANGED, pageReload);
+  ethereum.on(EthereumEvent.ACCOUNTS_CHANGED, handleAccount(ethereum));
+};
+
+const removeGlobalListeners = (ethereum: MetaMaskInpageProvider) => {
+  ethereum?.removeListener(EthereumEvent.ACCOUNTS_CHANGED, pageReload);
+  ethereum?.removeListener(
+    EthereumEvent.CHAIN_CHANGED,
+    handleAccount(ethereum)
+  );
+};
 
 const Web3Context = createContext<Web3State>(createDefaultState());
 
@@ -25,6 +51,8 @@ const Web3Provider: FunctionComponent = ({ children }) => {
           window.ethereum as any
         );
         const contract = await loadContract("NftMarket", provider);
+
+        setGlobalListeners(window.ethereum);
         setWeb3Api(
           createWeb3State({
             ethereum: window.ethereum,
@@ -33,8 +61,8 @@ const Web3Provider: FunctionComponent = ({ children }) => {
             isLoading: false,
           })
         );
-      } catch (e) {
-        console.error("Web3Provider error: ", e);
+      } catch (e: any) {
+        console.error("Please install web3 wallet", e);
         setWeb3Api((api) =>
           createWeb3State({
             ...(api as any),
@@ -45,6 +73,7 @@ const Web3Provider: FunctionComponent = ({ children }) => {
     }
 
     void initWeb3();
+    return () => removeGlobalListeners(window.ethereum);
   }, []);
 
   return (
