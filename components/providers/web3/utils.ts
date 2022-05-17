@@ -1,6 +1,6 @@
 import { MetaMaskInpageProvider } from "@metamask/providers";
 import { Contract, ethers, providers } from "ethers";
-import { setupHooks, Web3Hooks } from "../../hooks/web3/setupHooks";
+import { setupHooks, Web3Hooks } from "@hooks/web3/setupHooks";
 import { Web3Dependencies } from "@_types/hooks";
 
 declare global {
